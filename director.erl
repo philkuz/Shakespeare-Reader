@@ -1,18 +1,18 @@
 -module(director).
--export([current_actors/0, start/0]).
+-export([current_actors/0, start/0, find_play/1]).
 
 string_contains(Big, Small) ->
     string:str(Big, Small) > 0.
 
 
 find_play(PlayName) ->
-    PlayName.
-    % case length(string:tokens(PlayName, ".")) of
-    %     1 ->
-    %         string:concat(PlayName,".html");
-    %     2 ->
-    %         PlayName
-    % end.
+    % PlayName.
+    case length(string:tokens(PlayName, ".")) of
+        1 ->
+            string:concat(PlayName,".html");
+        2 ->
+            PlayName
+    end.
 
 
 current_actors() ->
@@ -133,4 +133,4 @@ reader(File) ->
 start() ->
     Director = spawn(director, current_actors, []),
     register(actors, Director),
-    new_play("hamlet.html").
+    new_play("hamlet").
