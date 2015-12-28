@@ -6,8 +6,13 @@ string_contains(Big, Small) ->
 
 
 find_play(PlayName) ->
-    % TODO make this find a play based on entering a title
     PlayName.
+    % case length(string:tokens(PlayName, ".")) of
+    %     1 ->
+    %         string:concat(PlayName,".html");
+    %     2 ->
+    %         PlayName
+    % end.
 
 
 current_actors() ->
@@ -20,14 +25,12 @@ current_actors(Actors) ->
             New_Actors = maps:put(Actor, PiD, Actors),
             current_actors(New_Actors);
         {speak, Message} ->
-            io:format("Say it~p~n", [Message]),
             give_dialog(Message, Actors),
             current_actors(Actors);
         {set, Actor} ->
             case maps:get(Actor, Actors, failed) of
                 failed ->
-                    Pid = spawn(actor, actor, [Actor]),
-
+                    Pid = spawn(actor, new_actor, [Actor]),
                     New_Actors = maps:update("current", Pid, maps:put(Actor, Pid, Actors)),
                     current_actors(New_Actors);
                 ActorPid ->
@@ -40,10 +43,9 @@ current_actors(Actors) ->
 give_dialog(Dialog, Actors) ->
     case maps:get("current", Actors,"") of
         "" ->
-            io:format("No current actor~n",[]);
+            yes;
         Actor_Pid ->
-            io:format("Actor:~p~n",[Actor_Pid]),
-            Actor_Pid ! Dialog
+            Actor_Pid ! {line, Dialog}
     end.
 
 
@@ -113,7 +115,7 @@ director(Line) ->
         {title, Title} ->
             io:format("~p~n", [Title]);
         {direction, Direction} ->
-            io:format("     ~p~n",[Direction]);
+            io:format("      ~p~n",[Direction]);
         format -> ok
     end.
 reader(File) ->
